@@ -36,7 +36,7 @@ function createCard(char)
 	local icon = getPlayerIcon(char)
 	info.ImageLabel.Image = icon
 	info.PlayerName.Text = char.Name
-	Newcard.Invite.MouseButton1Up:Connect(function()
+	Newcard.Invite.Activated:Connect(function()
 		if Newcard.Invite.Text == "INVITE" then
 			remote:FireServer(info.PlayerName.Text)
 			Newcard.Invite.Text = "SENDING"
@@ -53,15 +53,13 @@ end
 
 function updatePlayers()
 	clearoldPLayers()
-	for i,v in players:GetChildren() do
+	for _,v in players:GetChildren() do
 		if player ~= v then
 			local playerCard = createCard(v)
 			playerCard.Parent = sFrame
 		end
 	end
 end
-
-
 
 function closeWindow()
 	UI.Visible = false
@@ -83,6 +81,6 @@ end
 updatePlayers()
 updateEvent.OnClientEvent:Connect(newParty)
 players.PlayerAdded:Connect(updatePlayers)
-close.MouseButton1Up:Connect(closeWindow)
+close.Activated:Connect(closeWindow)
 
 return module

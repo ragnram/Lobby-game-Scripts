@@ -3,6 +3,40 @@ local RE = game.ReplicatedStorage.Remotes.RemoteEvents.Ragdoll
 
 local lastHit = {}
 
+Module.Check = function(t)
+	for _,v in pairs({"LeftWrist","RightWrist","LeftAnkle","RightAnkle","Neck"}) do
+		if v == t then return false end
+	end
+	return true
+end
+
+Module.Joints = function(c)
+	c.Humanoid.BreakJointsOnDeath = false
+	c.Humanoid.RequiresNeck = false
+	for _,v in pairs(c:GetDescendants()) do
+		if v:IsA("Motor6D")and Module.Check(v.Name)then
+			local b = Instance.new("BallSocketConstraint")
+			b.Parent = v.Parent
+			local a0,a1 = Instance.new("Attachment"),Instance.new("Attachment")
+			a0.Parent,a1.Parent = v.Part0,v.Part1
+			b.Attachment0,b.Attachment1 = a0,a1
+			a0.CFrame,a1.CFrame = v.c0,v.c1
+			b.LimitsEnabled = true
+			b.TwistLimitsEnabled = true
+			b.Enabled = false
+		elseif v:IsA'BasePart' then
+			v.CollisionGroup = "A"
+			if v.Name == "HumanoidRootPart" then
+				v.CollisionGroup = "B"
+			elseif v.Name=="Head"then
+				v.CanCollide = true
+			end
+		end
+	end
+end
+
+
+
 Module.Ragdoll = function(char,bool)
 	local plr = game.Players:GetPlayerFromCharacter(char)
 	if char.Humanoid.Health~=0 and ((char:FindFirstChild'LowerTorso'and not char.LowerTorso.Root.Enabled) or (char:FindFirstChild'Torso'and not char.Torso.Neck.Enabled)) and not bool then
@@ -22,7 +56,8 @@ Module.Ragdoll = function(char,bool)
 			elseif bodyPart:IsA'BallSocketConstraint' then
 				bodyPart.Enabled = true
 			elseif bodyPart.Name=="Head"then
-				local BodyVelocity = Instance.new("BodyVelocity",char.Head)
+				local BodyVelocity = Instance.new("BodyVelocity")
+				BodyVelocity.Parent = char.head
 				BodyVelocity.Velocity = Vector3.new(math.random(-10,10),0,math.random(-10,10))
 				task.spawn(function()
 					wait(.1)
@@ -86,37 +121,6 @@ Module.Bot = function(bot)
 			end
 		end
 	end)
-end
-
-Module.Check = function(t)
-	for _,v in pairs({"LeftWrist","RightWrist","LeftAnkle","RightAnkle","Neck"}) do
-		if v == t then return false end
-	end
-	return true
-end
-
-Module.Joints = function(c)
-	c.Humanoid.BreakJointsOnDeath = false
-	c.Humanoid.RequiresNeck = false
-	for _,v in pairs(c:GetDescendants()) do
-		if v:IsA("Motor6D")and Module.Check(v.Name)then
-			local b = Instance.new("BallSocketConstraint",v.Parent)
-			local a0,a1 = Instance.new("Attachment"),Instance.new("Attachment")
-			a0.Parent,a1.Parent = v.Part0,v.Part1
-			b.Attachment0,b.Attachment1 = a0,a1
-			a0.CFrame,a1.CFrame = v.c0,v.c1
-			b.LimitsEnabled = true
-			b.TwistLimitsEnabled = true
-			b.Enabled = false
-		elseif v:IsA'BasePart' then
-			v.CollisionGroup = "A"
-			if v.Name == "HumanoidRootPart" then
-				v.CollisionGroup = "B"
-			elseif v.Name=="Head"then
-				v.CanCollide = true
-			end
-		end
-	end
 end
 
 return Module

@@ -33,7 +33,7 @@ shopPanel.Visible = false
 
 -- Tween helper
 local function tweenPanel(panel, targetPos, easing, onComplete)
-	local tween = TweenService:Create(panel, TweenInfo.new(slideTime, easingStyle, easing), {Position = targetPos})
+	local tween = TweenService:Create(panel, TweenInfo.new(slideTime, easingStyle, easing), { Position = targetPos })
 	tween:Play()
 	if onComplete then
 		tween.Completed:Once(onComplete)
@@ -69,6 +69,5 @@ local function openShopPanel()
 	end
 end
 
-ui.Shop.MouseButton1Up:Connect(openShopPanel)
-ui.Invite.MouseButton1Up:Connect(openInvitePanel)
-
+ui.Shop.Activated:Connect(openShopPanel)
+ui.Invite.Activated:Connect(openInvitePanel)
